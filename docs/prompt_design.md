@@ -21,3 +21,13 @@ Schema grounding keeps the model focused on the actual `clients`, `providers`, a
 The generated SQL is validated before execution. The validator allows only a single read-only `SELECT` query, rejects semicolons and comments, and blocks dangerous keywords such as `DROP`, `DELETE`, `UPDATE`, `INSERT`, `ALTER`, `CREATE`, `REPLACE`, `TRUNCATE`, `PRAGMA`, `ATTACH`, `DETACH`, and `VACUUM`.
 
 Dangerous SQL is blocked because the assistant should never modify, attach to, or administer the local database. Even though the data is synthetic, the read-only habit is important for portfolio-quality BI tooling and for future use with more sensitive environments.
+
+## Router And Hybrid Grounding
+
+The question router uses deterministic keyword rules before any model-based routing. This keeps routing predictable, testable, and easy to debug while the project is still local-first and portfolio-oriented.
+
+Document questions route to RAG when they ask about definitions, policies, rules, thresholds, explanations, or interpretation. Analytical questions route to SQL when they ask for counts, totals, averages, rankings, trends, grouped results, or direct database calculations. Mixed questions route to hybrid when they combine documented rules with calculations, such as applying KPI definitions, segmentation rules, or policy thresholds to the database.
+
+Hybrid answers retrieve relevant document chunks first, then pass that document context into SQL generation so the query can reflect documented thresholds or definitions. The SQL is validated exactly like normal SQL-agent queries: only one read-only `SELECT` statement is allowed.
+
+The final hybrid prompt combines document context, the SQL query, and the SQL result table. It asks the model to explain the documented rule briefly, explain the calculated result briefly, avoid invention, and state caveats when the documents or data are insufficient.
