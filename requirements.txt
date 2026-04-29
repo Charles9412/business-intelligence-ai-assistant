@@ -1,0 +1,11 @@
+openai
+python-dotenv
+pandas
+numpy
+sqlalchemy
+sentence-transformers
+chromadb
+gradio
+pydantic
+pytest
+markdown
