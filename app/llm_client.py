@@ -96,6 +96,11 @@ class LLMClient:
 
 def _main() -> int:
     """Run a small command-line connection check."""
+    import sys
+
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     settings = load_settings()
     client = LLMClient(settings)
     print(f"Testing local LLM connection at {settings.llm_base_url}")
