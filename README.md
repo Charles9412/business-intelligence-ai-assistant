@@ -124,6 +124,16 @@ python scripts/test_rag_query.py
 
 The ingestion script reads markdown files from `data/documents/`, chunks them, embeds them with `all-MiniLM-L6-v2`, and stores the persistent ChromaDB index under `vector_store/`. Generated vector database files are ignored by git; keep `vector_store/.gitkeep` in the repository.
 
+## SQL Agent Setup
+
+After generating the synthetic data and building `data/business_data.sqlite`, run the safe SQL agent smoke test:
+
+```powershell
+python scripts/demo_sql_agent.py
+```
+
+The SQL agent extracts the SQLite schema, asks the configured local LLM for a single read-only `SELECT` query, validates the query, executes it with pandas, and asks the LLM for a short business-friendly summary. It blocks semicolons, comments, multiple statements, and database-modifying SQL.
+
 ## Generate Data And Build The Database
 
 Run these commands from the repository root:

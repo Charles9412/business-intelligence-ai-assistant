@@ -37,6 +37,21 @@ These questions are designed for later RAG, SQL, and hybrid routing tests. The a
 - Which regions have the highest total successful payment amount?
 - How many payments are pending or reversed by month?
 
+## SQL Agent Questions
+
+- Show total payment amount by provider.
+- Which month had the highest number of failed payments?
+- List the top 10 clients by total payment amount.
+- Show payment success rate by provider.
+- How many active clients are there by region?
+- What is total payment amount by client type?
+- Which provider channels have the highest average payment amount?
+- How many payments are successful, failed, pending, and reversed?
+- What are the top 10 providers by payment volume?
+- What is the failed payment count by failure reason?
+- Which regions have the highest number of high-risk clients?
+- What is the monthly payment success rate?
+
 ## Hybrid Questions
 
 - Which providers exceed the policy threshold for operational review based on their failure rate?
