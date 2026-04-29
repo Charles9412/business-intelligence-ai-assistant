@@ -1,6 +1,6 @@
 # Business Intelligence AI Assistant
 
-A local-first Python project skeleton for a Retrieval-Augmented Generation (RAG) and SQL business intelligence assistant. The assistant will use synthetic payment operations data to answer operational, KPI, segmentation, and policy questions without relying on private production data.
+A local-first Python project skeleton for a Retrieval-Augmented Generation (RAG) and SQL business intelligence assistant. The assistant uses synthetic FinSight PayOps payment operations data to answer operational, KPI, segmentation, and policy questions without relying on private production data.
 
 ## Goal
 
@@ -8,7 +8,7 @@ Build a business intelligence assistant that can:
 
 - Answer natural-language questions about payment operations KPIs.
 - Retrieve relevant policy and metric-definition context from local documents.
-- Query a local SQLite database containing synthetic transaction, client, merchant, and operations data.
+- Query a local SQLite database containing synthetic client, provider, and payment data.
 - Route questions between RAG, SQL, or combined workflows.
 - Run locally with configurable OpenAI-compatible LLM endpoints.
 
@@ -28,13 +28,25 @@ app/llm_client.py
 Answer with sources, assumptions, and query notes
 ```
 
+## Synthetic Dataset And Documents
+
+Phase 2 adds a fictional FinSight PayOps dataset for local analytics development:
+
+- `clients`: 500 synthetic clients with type, region, status, and risk level.
+- `providers`: 20 synthetic payment providers across Card, Bank Transfer, Cash, Wallet, and SPEI channels.
+- `payments`: 10,000 synthetic payment attempts across the 24 months before the fixed reference date `2026-04-01`.
+
+The generated data includes seasonal payment variation, client-type-based amount differences, payment statuses, and failure reasons only for failed payments. All names, records, and operational rules are synthetic.
+
+The markdown documents in `data/documents/` define KPI formulas, payment operations policy, and client segmentation rules. They are intended to become the first local RAG corpus in a later phase.
+
 ## Project Layout
 
 - `app/`: application code and orchestration modules.
 - `data/documents/`: synthetic business documentation used for RAG.
 - `data/raw/`: generated raw synthetic data files.
 - `data/processed/`: cleaned datasets ready for database loading.
-- `data/business_data.sqlite`: local SQLite database placeholder.
+- `data/business_data.sqlite`: local SQLite database.
 - `scripts/`: one-off setup and ingestion scripts.
 - `vector_store/`: local vector database files.
 - `docs/`: design notes, data dictionary, prompts, and demo questions.
@@ -63,17 +75,26 @@ Copy-Item .env.example .env
 
 4. Edit `.env` with your local OpenAI-compatible endpoint and model settings. Do not commit `.env`.
 
+## Generate Data And Build The Database
+
+Run these commands from the repository root:
+
+```powershell
+python scripts/generate_synthetic_data.py
+python scripts/build_database.py
+```
+
+The first command writes `clients.csv`, `providers.csv`, and `payments.csv` to `data/raw/`. The second command replaces `data/business_data.sqlite` and loads the three tables with primary keys, foreign keys, checks, and useful indexes.
+
 ## Initial Workflow
 
-The full system is intentionally not implemented yet. The expected next milestones are:
+The full assistant is intentionally not implemented yet. The expected next milestones are:
 
-1. Generate synthetic payment operations datasets.
-2. Build the SQLite schema and load processed data.
-3. Ingest markdown documents into ChromaDB.
-4. Implement SQL-safe question answering.
-5. Implement RAG over policy and KPI documents.
-6. Add routing logic for SQL, RAG, and hybrid questions.
-7. Add a lightweight Gradio interface.
+1. Ingest markdown documents into ChromaDB.
+2. Implement SQL-safe question answering.
+3. Implement RAG over policy and KPI documents.
+4. Add routing logic for SQL, RAG, and hybrid questions.
+5. Add a lightweight Gradio interface.
 
 ## Privacy
 
