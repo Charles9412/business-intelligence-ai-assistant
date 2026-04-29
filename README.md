@@ -75,6 +75,39 @@ Copy-Item .env.example .env
 
 4. Edit `.env` with your local OpenAI-compatible endpoint and model settings. Do not commit `.env`.
 
+
+## Local LLM Setup
+
+This project uses the `openai` Python package against an OpenAI-compatible local server. For LM Studio:
+
+1. Open LM Studio and load a chat model.
+2. Go to the Developer or Local Server section.
+3. Start the local server.
+4. Confirm the server is reachable at `http://localhost:1234` and that the model identifier matches your `.env` value.
+
+Create your local environment file from the example:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+For the LM Studio server shown in the screenshot, the relevant settings are:
+
+```text
+LLM_BASE_URL=http://localhost:1234/v1
+LLM_API_KEY=lm-studio
+LLM_MODEL=openai/gpt-oss-20b
+```
+
+`LLM_API_KEY` is required by the OpenAI client, but LM Studio usually accepts any non-empty placeholder value for local use. Do not commit real API keys or private credentials.
+
+Test the connection from the repository root:
+
+```powershell
+python -m app.llm_client
+python scripts/test_llm_connection.py
+```
+
 ## Generate Data And Build The Database
 
 Run these commands from the repository root:
