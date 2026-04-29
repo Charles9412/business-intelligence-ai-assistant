@@ -134,6 +134,16 @@ python scripts/demo_sql_agent.py
 
 The SQL agent extracts the SQLite schema, asks the configured local LLM for a single read-only `SELECT` query, validates the query, executes it with pandas, and asks the LLM for a short business-friendly summary. It blocks semicolons, comments, multiple statements, and database-modifying SQL.
 
+## Question Router And Hybrid Answers
+
+After building the document vector store and SQLite database, run the router demo:
+
+```powershell
+python scripts/demo_router.py
+```
+
+The router classifies questions as `rag`, `sql`, or `hybrid` using deterministic rules. Hybrid answers retrieve document context, generate and validate a read-only SQL query, execute it, and synthesize an answer from only the retrieved documents and query result.
+
 ## Generate Data And Build The Database
 
 Run these commands from the repository root:

@@ -60,3 +60,16 @@ These questions are designed for later RAG, SQL, and hybrid routing tests. The a
 - Are any regions showing abnormal payment behavior compared with the policy definition?
 - Which client types contribute the most successful payment amount, and how should that affect KPI interpretation?
 - How should reversed payments affect total payment amount reporting for the current dataset?
+
+## Router and Hybrid Questions
+
+- What is payment success rate?
+- How are failed payments reviewed?
+- How are high-value clients classified?
+- Show total payment amount by provider.
+- Which month had the highest number of failed payments?
+- List the top 10 clients by total payment amount.
+- Using the KPI definition, calculate the payment success rate from the database.
+- According to the client segmentation rules, how many high-value clients do we have?
+- Based on the provider failure-rate threshold in the policy, which providers should be reviewed?
+- Using the documents and database, summarize whether payment operations need attention.

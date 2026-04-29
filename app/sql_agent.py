@@ -13,7 +13,9 @@ from app.llm_client import LLMClient
 from app.prompts import (
     SQL_AGENT_SYSTEM_PROMPT,
     SQL_ANSWER_PROMPT_TEMPLATE,
+    SQL_ANSWER_WITH_CONTEXT_PROMPT_TEMPLATE,
     SQL_GENERATION_PROMPT_TEMPLATE,
+    SQL_GENERATION_WITH_CONTEXT_PROMPT_TEMPLATE,
 )
 
 DANGEROUS_SQL_KEYWORDS = (
@@ -102,14 +104,20 @@ class SQLAgent:
 
         return "\n".join(lines)
 
-    def generate_sql(self, question: str) -> str:
+    def generate_sql(self, question: str, extra_context: str | None = None) -> str:
         """Use the LLM to generate a SQLite SELECT query for a question."""
         if not question.strip():
             raise ValueError("question must not be blank")
 
-        base_prompt = SQL_GENERATION_PROMPT_TEMPLATE.format(
+        template = (
+            SQL_GENERATION_WITH_CONTEXT_PROMPT_TEMPLATE
+            if extra_context
+            else SQL_GENERATION_PROMPT_TEMPLATE
+        )
+        base_prompt = template.format(
             schema=self.get_schema(),
             question=question.strip(),
+            extra_context=extra_context or "",
         )
         prompt = base_prompt
         last_error: ValueError | None = None
@@ -177,26 +185,38 @@ class SQLAgent:
 
         return dataframe.head(max_rows)
 
-    def answer_question(self, question: str) -> str:
+    def answer_question(self, question: str, extra_context: str | None = None) -> str:
         """Generate SQL, execute it, and synthesize a concise business answer."""
-        sql = self.generate_sql(question)
+        sql = self.generate_sql(question, extra_context=extra_context)
         dataframe = self.execute_sql(sql)
-        return self.synthesize_answer(question, sql, dataframe)
+        return self.synthesize_answer(question, sql, dataframe, extra_context=extra_context)
 
-    def synthesize_answer(self, question: str, sql: str, dataframe: pd.DataFrame) -> str:
+    def synthesize_answer(
+        self,
+        question: str,
+        sql: str,
+        dataframe: pd.DataFrame,
+        extra_context: str | None = None,
+    ) -> str:
         """Use the LLM to summarize a validated query result."""
         self.validate_sql(sql)
         result_markdown = self._dataframe_to_markdown(dataframe)
+        template = (
+            SQL_ANSWER_WITH_CONTEXT_PROMPT_TEMPLATE
+            if extra_context
+            else SQL_ANSWER_PROMPT_TEMPLATE
+        )
 
         answer = self.llm_client.chat(
             [
                 {"role": "system", "content": "You summarize SQL results for business users."},
                 {
                     "role": "user",
-                    "content": SQL_ANSWER_PROMPT_TEMPLATE.format(
+                    "content": template.format(
                         question=question.strip(),
                         sql=sql,
                         result_markdown=result_markdown,
+                        extra_context=extra_context or "",
                     ),
                 },
             ],
