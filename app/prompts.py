@@ -70,6 +70,8 @@ SQL_ANSWER_PROMPT_TEMPLATE = """Write a short business-friendly answer using the
 Rules:
 - Use only the query result shown below.
 - Do not invent values or explanations not supported by the result.
+- Do not recreate or reformat the result as a Markdown table.
+- Write a short summary only; the application will display the table separately.
 - Mention if the result is empty.
 - Keep the answer concise.
 
@@ -92,6 +94,8 @@ Rules:
 - Do not invent values, definitions, thresholds, or explanations.
 - Explain the relevant documented rule or definition briefly when it helps.
 - Explain the calculated result briefly.
+- Do not recreate or reformat the result as a Markdown table.
+- Write a short summary only; the application will display the table separately.
 - Mention if the result is empty or the context is insufficient.
 - Keep the answer concise.
 

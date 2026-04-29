@@ -105,3 +105,29 @@ def test_execute_sql_returns_dataframe(test_database) -> None:
     assert isinstance(dataframe, pd.DataFrame)
     assert list(dataframe.columns) == ["client_id", "client_name"]
     assert dataframe.iloc[0]["client_id"] == "C001"
+
+
+def test_synthesize_answer_appends_deterministic_result_table(test_database) -> None:
+    agent = SQLAgent(
+        settings=Settings(database_path=str(test_database)),
+        database_path=test_database,
+        llm_client=FakeLLMClient("Summary only."),
+    )
+    dataframe = pd.DataFrame(
+        {
+            "client_id": ["C001", "C002"],
+            "total_amount": [125.50, 99.00],
+        }
+    )
+
+    answer = agent.synthesize_answer(
+        "List clients by amount.",
+        "SELECT client_id, total_amount FROM clients",
+        dataframe,
+    )
+
+    assert "Summary only." in answer
+    assert "## Query Result" in answer
+    assert "| client_id | total_amount |" in answer
+    assert "| C001 | 125.5 |" in answer
+    assert "## SQL Query Used" in answer
