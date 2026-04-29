@@ -224,7 +224,11 @@ class SQLAgent:
             max_tokens=700,
         )
 
-        return f"{answer.strip()}\n\n## SQL Query Used\n\n```sql\n{sql}\n```"
+        return (
+            f"{answer.strip()}\n\n"
+            f"## Query Result\n\n{result_markdown}\n\n"
+            f"## SQL Query Used\n\n```sql\n{sql}\n```"
+        )
 
     def answer(self, question: str) -> str:
         """Backward-compatible alias for `answer_question`."""

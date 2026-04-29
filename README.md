@@ -129,7 +129,7 @@ The ingestion script reads markdown files from `data/documents/`, chunks them, e
 After generating the synthetic data and building `data/business_data.sqlite`, run the safe SQL agent smoke test:
 
 ```powershell
-python scripts/demo_sql_agent.py
+python scripts/test_sql_agent.py
 ```
 
 The SQL agent extracts the SQLite schema, asks the configured local LLM for a single read-only `SELECT` query, validates the query, executes it with pandas, and asks the LLM for a short business-friendly summary. It blocks semicolons, comments, multiple statements, and database-modifying SQL.
@@ -143,6 +143,17 @@ python scripts/demo_router.py
 ```
 
 The router classifies questions as `rag`, `sql`, or `hybrid` using deterministic rules. Hybrid answers retrieve document context, generate and validate a read-only SQL query, execute it, and synthesize an answer from only the retrieved documents and query result.
+
+## Run the Gradio Demo
+
+Make sure LM Studio's local server is running before launching the app. Build the document index first if you have not already done so:
+
+```powershell
+python scripts/ingest_documents.py
+python -m app.main
+```
+
+The app opens a local Gradio demo at `http://127.0.0.1:7860`. It provides example RAG, SQL, and hybrid questions, then displays the final answer, selected route, route reason, document sources, SQL query when applicable, and retrieved context.
 
 ## Generate Data And Build The Database
 
