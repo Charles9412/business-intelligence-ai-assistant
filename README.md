@@ -37,12 +37,21 @@ Make sure LM Studio or another OpenAI-compatible local server is running first.
 
 ## Screenshots
 
-Screenshot placeholders are referenced here for portfolio use. Add the images when available.
+### Hybrid Answer: RAG + SQL
 
-- `screenshots/01_rag_answer.png`
-- `screenshots/02_sql_answer.png`
-- `screenshots/03_hybrid_answer.png`
-- `screenshots/04_answer_trace.png`
+![Hybrid answer showing RAG sources and generated SQL](screenshots/03_hybrid_answer.png)
+
+### SQL Analytics Answer
+
+![SQL answer showing generated query and result](screenshots/02_sql_answer.png)
+
+### Document RAG Answer
+
+![RAG answer showing document-grounded response](screenshots/01_rag_answer.png)
+
+### Answer Trace
+
+![Answer trace showing route, sources, SQL, and retrieved context](screenshots/04_answer_trace.png)
 
 ## Key Features
 
