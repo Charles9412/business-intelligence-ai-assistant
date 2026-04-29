@@ -1,9 +1,12 @@
-# Python
+# Python bytecode and caches
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
 .coverage
 htmlcov/
 
@@ -15,18 +18,24 @@ env/
 # Environment and secrets
 .env
 *.env.local
+*.env.*.local
 
-# Local data artifacts
-/data/raw/*
-/data/processed/*
-!/data/raw/.gitkeep
-!/data/processed/.gitkeep
+# Generated vector store files
 /vector_store/*
 !/vector_store/.gitkeep
 
-# SQLite runtime files
+# SQLite runtime sidecars
 *.sqlite-shm
 *.sqlite-wal
+*.db-shm
+*.db-wal
+
+# Temporary and local files
+*.tmp
+*.temp
+*.log
+*.bak
+~$*
 
 # OS and editor
 .DS_Store

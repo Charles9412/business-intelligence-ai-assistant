@@ -1,0 +1,21 @@
+provider_id,provider_name,channel,region,active_since,status
+P001,Aurora Card Network,Card,West,2023-02-22,Active
+P002,BridgeBank Transfer,Bank Transfer,South,2023-05-06,Active
+P003,Centavo Cash Rail,Cash,Central,2025-04-12,Active
+P004,Delta Wallet Services,Wallet,West,2023-03-28,Active
+P005,Eagle SPEI Gateway,SPEI,East,2022-02-26,Active
+P006,Faro Card Processing,Card,West,2024-02-28,Active
+P007,Granite Bank Link,Bank Transfer,East,2023-02-04,Active
+P008,Helio Cash Connect,Cash,South,2024-09-24,Active
+P009,Ion Wallet Hub,Wallet,North,2022-08-31,Active
+P010,Jade SPEI Direct,SPEI,Central,2024-11-26,Active
+P011,Kinetic Card Acquirer,Card,South,2019-07-18,Inactive
+P012,Laguna Bank Transfer,Bank Transfer,East,2019-06-28,Active
+P013,Metro Cash Services,Cash,Central,2019-11-24,Active
+P014,Nimbus Wallet Network,Wallet,North,2022-11-14,Active
+P015,Orion SPEI Switch,SPEI,West,2023-11-12,Active
+P016,Pioneer Card Gateway,Card,North,2020-08-28,Active
+P017,Quanta Bank Rail,Bank Transfer,South,2020-04-07,Active
+P018,Riviera Cash Ops,Cash,West,2024-11-06,Active
+P019,Sol Wallet Pay,Wallet,South,2024-02-19,Active
+P020,Terra SPEI Processor,SPEI,East,2023-06-21,Active

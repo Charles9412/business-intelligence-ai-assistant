@@ -1,181 +1,260 @@
 # Business Intelligence AI Assistant
 
-A local-first Python project skeleton for a Retrieval-Augmented Generation (RAG) and SQL business intelligence assistant. The assistant uses synthetic FinSight PayOps payment operations data to answer operational, KPI, segmentation, and policy questions without relying on private production data.
+Local-first RAG + SQL business intelligence assistant for synthetic payment operations data.
 
-## Goal
+## Summary
 
-Build a business intelligence assistant that can:
+Business Intelligence AI Assistant is a portfolio project that demonstrates how a local LLM can answer business questions by combining document retrieval, safe SQL generation, and route-aware answer synthesis. The fictional domain is FinSight PayOps, a synthetic payment operations company with generated clients, providers, payments, KPI definitions, policy notes, and client segmentation rules.
 
-- Answer natural-language questions about payment operations KPIs.
-- Retrieve relevant policy and metric-definition context from local documents.
-- Query a local SQLite database containing synthetic client, provider, and payment data.
-- Route questions between RAG, SQL, or combined workflows.
-- Run locally with configurable OpenAI-compatible LLM endpoints.
+The app runs locally with an OpenAI-compatible model server such as LM Studio. It does not require private data or external SaaS services for the core demo.
 
-## Planned Architecture
+## Overview
 
-```text
-User Question
-    |
-    v
-app/router.py
-    |-- RAG path -> app/rag.py -> vector_store/
-    |-- SQL path -> app/sql_agent.py -> data/business_data.sqlite
-    |-- Hybrid path -> retrieved context + SQL results
-    v
-app/llm_client.py
-    v
-Answer with sources, assumptions, and query notes
-```
+The assistant answers three kinds of questions:
 
-## Synthetic Dataset And Documents
+- **RAG:** document-only questions about KPI definitions, policies, and segmentation rules.
+- **SQL:** analytical questions over a local SQLite database.
+- **Hybrid:** questions that need a documented rule plus a database calculation.
 
-Phase 2 adds a fictional FinSight PayOps dataset for local analytics development:
+The Gradio UI shows the final answer, selected route, route reason, document sources, generated SQL, and retrieved document context.
 
-- `clients`: 500 synthetic clients with type, region, status, and risk level.
-- `providers`: 20 synthetic payment providers across Card, Bank Transfer, Cash, Wallet, and SPEI channels.
-- `payments`: 10,000 synthetic payment attempts across the 24 months before the fixed reference date `2026-04-01`.
+## Demo
 
-The generated data includes seasonal payment variation, client-type-based amount differences, payment statuses, and failure reasons only for failed payments. All names, records, and operational rules are synthetic.
-
-The markdown documents in `data/documents/` define KPI formulas, payment operations policy, and client segmentation rules. They are intended to become the first local RAG corpus in a later phase.
-
-## Project Layout
-
-- `app/`: application code and orchestration modules.
-- `data/documents/`: synthetic business documentation used for RAG.
-- `data/raw/`: generated raw synthetic data files.
-- `data/processed/`: cleaned datasets ready for database loading.
-- `data/business_data.sqlite`: local SQLite database.
-- `scripts/`: one-off setup and ingestion scripts.
-- `vector_store/`: local vector database files.
-- `docs/`: design notes, data dictionary, prompts, and demo questions.
-- `tests/`: early unit-test placeholders.
-
-## Setup
-
-1. Create and activate a virtual environment.
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-2. Install dependencies.
-
-```powershell
-pip install -r requirements.txt
-```
-
-3. Create a local environment file.
-
-```powershell
-Copy-Item .env.example .env
-```
-
-4. Edit `.env` with your local OpenAI-compatible endpoint and model settings. Do not commit `.env`.
-
-
-## Local LLM Setup
-
-This project uses the `openai` Python package against an OpenAI-compatible local server. For LM Studio:
-
-1. Open LM Studio and load a chat model.
-2. Go to the Developer or Local Server section.
-3. Start the local server.
-4. Confirm the server is reachable at `http://localhost:1234` and that the model identifier matches your `.env` value.
-
-Create your local environment file from the example:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-For the LM Studio server shown in the screenshot, the relevant settings are:
-
-```text
-LLM_BASE_URL=http://localhost:1234/v1
-LLM_API_KEY=lm-studio
-LLM_MODEL=openai/gpt-oss-20b
-```
-
-`LLM_API_KEY` is required by the OpenAI client, but LM Studio usually accepts any non-empty placeholder value for local use. Do not commit real API keys or private credentials.
-
-Test the connection from the repository root:
-
-```powershell
-python -m app.llm_client
-python scripts/test_llm_connection.py
-```
-
-## Document RAG Setup
-
-Build the local document vector store after installing dependencies and configuring `.env`:
-
-```powershell
-python scripts/ingest_documents.py
-```
-
-Then run a small document-only RAG smoke test:
-
-```powershell
-python scripts/test_rag_query.py
-```
-
-The ingestion script reads markdown files from `data/documents/`, chunks them, embeds them with `all-MiniLM-L6-v2`, and stores the persistent ChromaDB index under `vector_store/`. Generated vector database files are ignored by git; keep `vector_store/.gitkeep` in the repository.
-
-## SQL Agent Setup
-
-After generating the synthetic data and building `data/business_data.sqlite`, run the safe SQL agent smoke test:
-
-```powershell
-python scripts/test_sql_agent.py
-```
-
-The SQL agent extracts the SQLite schema, asks the configured local LLM for a single read-only `SELECT` query, validates the query, executes it with pandas, and asks the LLM for a short business-friendly summary. It blocks semicolons, comments, multiple statements, and database-modifying SQL.
-
-## Question Router And Hybrid Answers
-
-After building the document vector store and SQLite database, run the router demo:
-
-```powershell
-python scripts/demo_router.py
-```
-
-The router classifies questions as `rag`, `sql`, or `hybrid` using deterministic rules. Hybrid answers retrieve document context, generate and validate a read-only SQL query, execute it, and synthesize an answer from only the retrieved documents and query result.
-
-## Run the Gradio Demo
-
-Make sure LM Studio's local server is running before launching the app. Build the document index first if you have not already done so:
+Run the local demo:
 
 ```powershell
 python scripts/ingest_documents.py
 python -m app.main
 ```
 
-The app opens a local Gradio demo at `http://127.0.0.1:7860`. It provides example RAG, SQL, and hybrid questions, then displays the final answer, selected route, route reason, document sources, SQL query when applicable, and retrieved context.
+Then open:
+
+```text
+http://127.0.0.1:7860
+```
+
+Make sure LM Studio or another OpenAI-compatible local server is running first.
+
+## Screenshots
+
+Screenshot placeholders are referenced here for portfolio use. Add the images when available.
+
+- `screenshots/01_rag_answer.png`
+- `screenshots/02_sql_answer.png`
+- `screenshots/03_hybrid_answer.png`
+- `screenshots/04_answer_trace.png`
+
+## Key Features
+
+- Local-first OpenAI-compatible LLM client.
+- Synthetic payment operations dataset with 500 clients, 20 providers, and 10,000 payments.
+- SQLite analytics database with foreign keys and safe read-only execution.
+- Markdown document RAG over KPI definitions, payment operations policy, and segmentation rules.
+- Persistent ChromaDB vector store using `all-MiniLM-L6-v2` embeddings.
+- Rule-based question router for RAG, SQL, and Hybrid paths.
+- SQL validation that blocks non-SELECT statements, comments, semicolons, and dangerous keywords.
+- Gradio demo UI with route trace, SQL trace, sources, and retrieved context.
+- Pytest coverage for config-adjacent helpers, RAG chunking, SQL validation/execution, router dispatch, and UI formatting helpers.
+
+## Architecture
+
+```text
+User Question
+  -> Assistant Router
+  -> Route Decision: RAG / SQL / Hybrid
+  -> Document RAG Pipeline and/or SQL Agent
+  -> Retrieved Context and/or SQL Result
+  -> Local LLM Answer Synthesis
+  -> Final Answer + Sources + SQL Trace
+```
+
+Core modules:
+
+- `app/router.py`: deterministic route selection and answer dispatch.
+- `app/rag.py`: document loading, chunking, embeddings, ChromaDB retrieval, and grounded document answers.
+- `app/sql_agent.py`: schema extraction, SQL generation, validation, read-only execution, and result summaries.
+- `app/llm_client.py`: OpenAI-compatible local LLM wrapper.
+- `app/main.py`: Gradio demo UI.
+
+## How It Works
+
+1. Synthetic markdown documents are loaded from `data/documents/`.
+2. `scripts/ingest_documents.py` chunks those documents and stores embeddings in `vector_store/`.
+3. Synthetic payment operations data is stored in `data/business_data.sqlite`.
+4. The router classifies each question as `rag`, `sql`, or `hybrid`.
+5. RAG questions retrieve document chunks and ask the LLM to answer only from that context.
+6. SQL questions generate a SQLite `SELECT`, validate it, execute it, and display deterministic result tables.
+7. Hybrid questions retrieve document context, use that context to guide SQL generation, execute the validated query, and synthesize the final answer from both sources.
+
+## Example Questions
+
+### RAG
+
+- What is payment success rate?
+- How are failed payments reviewed?
+- How are high-value clients classified?
+- What counts as abnormal payment behavior?
+- How should reversed payments be interpreted?
+
+### SQL
+
+- Show total payment amount by provider.
+- Which month had the highest number of failed payments?
+- List the top 10 clients by total payment amount.
+- Show payment success rate by provider.
+- How many active clients are there by region?
+
+### Hybrid
+
+- Using the KPI definition, calculate the payment success rate from the database.
+- According to the client segmentation rules, how many high-value clients do we have?
+- Based on the provider failure-rate threshold in the policy, which providers should be reviewed?
+- Based on the segmentation rules, how many clients appear low-value, standard, high-value, and strategic?
+- Which high-value clients have elevated failure rates and should be prioritized for review?
+
+## Tech Stack
+
+- Python
+- Gradio
+- SQLite
+- pandas
+- OpenAI Python SDK
+- python-dotenv
+- sentence-transformers
+- ChromaDB
+- pytest
+
+## Project Structure
+
+```text
+app/
+  config.py            # environment configuration
+  llm_client.py        # OpenAI-compatible local LLM client
+  rag.py               # document RAG pipeline
+  sql_agent.py         # safe SQL agent
+  router.py            # RAG / SQL / Hybrid router
+  main.py              # Gradio UI
+data/
+  documents/           # synthetic markdown knowledge base
+  raw/                 # generated synthetic CSV data
+  processed/           # reserved for processed data artifacts
+  business_data.sqlite # local synthetic SQLite database
+docs/
+  architecture.md
+  data_dictionary.md
+  demo_questions.md
+  limitations.md
+  prompt_design.md
+scripts/
+  generate_synthetic_data.py
+  build_database.py
+  ingest_documents.py
+  test_llm_connection.py
+  test_rag_query.py
+  test_sql_agent.py
+  demo_router.py
+tests/
+  test_*.py
+vector_store/
+  .gitkeep             # generated ChromaDB files are ignored
+```
+
+## Setup
+
+Create and activate a virtual environment:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Create a local environment file:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Example LM Studio-compatible settings:
+
+```text
+LLM_BASE_URL=http://localhost:1234/v1
+LLM_API_KEY=lm-studio
+LLM_MODEL=your-loaded-model-id
+DATABASE_PATH=data/business_data.sqlite
+VECTOR_STORE_PATH=vector_store
+```
+
+Do not commit `.env`.
 
 ## Generate Data And Build The Database
-
-Run these commands from the repository root:
 
 ```powershell
 python scripts/generate_synthetic_data.py
 python scripts/build_database.py
 ```
 
-The first command writes `clients.csv`, `providers.csv`, and `payments.csv` to `data/raw/`. The second command replaces `data/business_data.sqlite` and loads the three tables with primary keys, foreign keys, checks, and useful indexes.
+The database is written to `data/business_data.sqlite`.
 
-## Initial Workflow
+## Run Document Ingestion
 
-The full assistant is intentionally not implemented yet. The expected next milestones are:
+```powershell
+python scripts/ingest_documents.py
+```
 
-1. Ingest markdown documents into ChromaDB.
-2. Implement SQL-safe question answering.
-3. Implement RAG over policy and KPI documents.
-4. Add routing logic for SQL, RAG, and hybrid questions.
-5. Add a lightweight Gradio interface.
+This creates or refreshes the local ChromaDB index under `vector_store/`.
 
-## Privacy
+## Run The Gradio App
 
-This repository must not include private client data, payment credentials, API keys, or production database exports. All demo data should be synthetic and clearly labeled as such.
+Start LM Studio's local server, then run:
+
+```powershell
+python -m app.main
+```
+
+Open:
+
+```text
+http://127.0.0.1:7860
+```
+
+## Run Tests
+
+```powershell
+python -m pytest tests
+```
+
+The tests do not require a real local LLM server. LLM-dependent behavior is mocked where appropriate.
+
+## Safety And Grounding Strategy
+
+- RAG answers are instructed to use only retrieved document context.
+- SQL generation is schema-grounded with table names, columns, relationships, and categorical examples.
+- SQL execution is read-only and validates generated SQL before execution.
+- The SQL validator rejects multiple statements, comments, semicolons, and dangerous keywords such as `DROP`, `DELETE`, `UPDATE`, `INSERT`, `ALTER`, `CREATE`, `REPLACE`, `TRUNCATE`, `PRAGMA`, `ATTACH`, `DETACH`, and `VACUUM`.
+- SQL result tables are rendered deterministically from pandas instead of relying on the LLM to format tabular output.
+- Hybrid answers combine retrieved document context with validated SQL results and include sources plus SQL trace.
+
+## Limitations
+
+- The dataset is synthetic and does not represent real payment operations.
+- Local LLM quality depends on the selected model, quantization, and prompt-following ability.
+- SQL generation is constrained and validated, but still requires evaluation before production use.
+- The app has no authentication, authorization, monitoring, or audit logging.
+- The vector store must be rebuilt after document changes.
+- The UI is a local demo, not a hardened production BI application.
+
+## Future Improvements
+
+- Add a richer evaluation suite for routing, SQL generation, and grounded answer quality.
+- Add authentication and user-level audit logs.
+- Add configurable date windows and currency handling.
+- Add chart rendering for common SQL results.
+- Add more synthetic operational tables such as refunds, chargebacks, settlements, and provider incidents.
+- Add prompt and retrieval regression tests for the document corpus.
+- Package the app with Docker for repeatable local demos.
