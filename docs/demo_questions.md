@@ -11,6 +11,22 @@ These questions are designed for later RAG, SQL, and hybrid routing tests. The a
 - What makes a client strategic according to the segmentation rules?
 - How should risk level influence client segmentation analysis?
 
+## Document RAG Questions
+
+- What is Total Payment Amount?
+- How is Average Payment Value calculated?
+- What is payment success rate?
+- What is payment failure rate?
+- How should pending payments be interpreted?
+- How should reversed payments be interpreted?
+- How are failed payments reviewed?
+- What provider failure-rate thresholds trigger monitoring or escalation?
+- What counts as abnormal payment behavior?
+- How are low-value clients classified?
+- How are high-value clients classified?
+- What makes a client strategic?
+- How should risk level be interpreted during segmentation?
+
 ## SQL-Only Questions
 
 - How many clients are active, inactive, and suspended?

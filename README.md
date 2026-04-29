@@ -108,6 +108,22 @@ python -m app.llm_client
 python scripts/test_llm_connection.py
 ```
 
+## Document RAG Setup
+
+Build the local document vector store after installing dependencies and configuring `.env`:
+
+```powershell
+python scripts/ingest_documents.py
+```
+
+Then run a small document-only RAG smoke test:
+
+```powershell
+python scripts/test_rag_query.py
+```
+
+The ingestion script reads markdown files from `data/documents/`, chunks them, embeds them with `all-MiniLM-L6-v2`, and stores the persistent ChromaDB index under `vector_store/`. Generated vector database files are ignored by git; keep `vector_store/.gitkeep` in the repository.
+
 ## Generate Data And Build The Database
 
 Run these commands from the repository root:

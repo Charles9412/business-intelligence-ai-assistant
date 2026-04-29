@@ -15,6 +15,9 @@ from app.llm_client import LLMClient
 
 def main() -> None:
     """Send a simple prompt and print the model response."""
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     settings = load_settings()
     client = LLMClient(settings)
     response = client.simple_chat("Reply with exactly: LLM connection successful.")
