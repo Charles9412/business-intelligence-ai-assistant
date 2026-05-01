@@ -6,6 +6,8 @@ sqlalchemy
 sentence-transformers
 chromadb
 gradio
+fastapi
+uvicorn
 pydantic
 pytest
 markdown
