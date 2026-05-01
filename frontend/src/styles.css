@@ -78,11 +78,18 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
+  padding-bottom: 12px;
+  scroll-padding-bottom: 18px;
 }
 
 .chat-turn {
   display: grid;
   gap: 10px;
+}
+
+.conversation-end-anchor {
+  height: 1px;
+  width: 100%;
 }
 
 .bubble {

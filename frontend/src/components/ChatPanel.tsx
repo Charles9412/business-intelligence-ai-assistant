@@ -40,9 +40,12 @@ export function ChatPanel({ question, setQuestion, history, loading, onSubmit }:
   )
 
   const conversationRef = useRef<HTMLDivElement | null>(null)
+  const conversationEndRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    if (conversationRef.current) {
+    if (conversationEndRef.current) {
+      conversationEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    } else if (conversationRef.current) {
       conversationRef.current.scrollTop = conversationRef.current.scrollHeight
     }
   }, [history])
@@ -148,6 +151,7 @@ export function ChatPanel({ question, setQuestion, history, loading, onSubmit }:
         ) : (
           <p className="muted">Ask a question to start the analysis.</p>
         )}
+        <div ref={conversationEndRef} className="conversation-end-anchor" />
       </div>
       <form className="chat-form" onSubmit={submit}>
         <ExampleQuestions value={question} onSelect={setQuestion} />
