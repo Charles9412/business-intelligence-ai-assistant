@@ -12,7 +12,12 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 type ChatPanelProps = {
   question: string
   setQuestion: (value: string) => void
-  history: ChatResponse[]
+  history: Array<{
+    id: string
+    question: string
+    pending: boolean
+    response: ChatResponse | null
+  }>
   loading: boolean
   onSubmit: () => void
 }
@@ -77,56 +82,66 @@ export function ChatPanel({ question, setQuestion, history, loading, onSubmit }:
       <h3>Main Answer</h3>
       <div className="conversation" ref={conversationRef}>
         {history.length ? (
-          history.map((item, index) => (
-            <div key={`${item.question}-${index}`} className="chat-turn">
+          history.map((item) => (
+            <div key={item.id} className="chat-turn">
             <article className="bubble user-bubble chat-user">
               <p className="bubble-label">User</p>
                 <p>{item.question}</p>
             </article>
             <article className="bubble assistant-bubble chat-assistant">
               <p className="bubble-label">Assistant</p>
-              <div className="markdown-body">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm, remarkMath]}
-                  rehypePlugins={[rehypeKatex]}
-                  components={{
-                    pre({ children }) {
-                      return <>{children}</>
-                    },
-                    code({ className, children, ...props }) {
-                      const match = /language-(\w+)/.exec(className || '')
-                      const language = match?.[1]?.toLowerCase() ?? ''
-                      const content = String(children).replace(/\n$/, '')
-                      if (!match) {
+              {item.pending ? (
+                <div className="typing-indicator" aria-label="Assistant is typing">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              ) : (
+                <div className="markdown-body">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                    components={{
+                      pre({ children }) {
+                        return <>{children}</>
+                      },
+                      code({ className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || '')
+                        const language = match?.[1]?.toLowerCase() ?? ''
+                        const content = String(children).replace(/\n$/, '')
+                        if (!match) {
+                          return (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          )
+                        }
                         return (
-                          <code className={className} {...props}>
-                            {children}
-                          </code>
+                          <div className="markdown-codeblock">
+                            <SyntaxHighlighter
+                              language={language === 'sql' ? 'sql' : language}
+                              style={cleanTheme}
+                              customStyle={{
+                                margin: 0,
+                                borderRadius: '12px',
+                                background: '#050a18',
+                                padding: '12px',
+                              }}
+                              wrapLongLines={false}
+                            >
+                              {content}
+                            </SyntaxHighlighter>
+                          </div>
                         )
-                      }
-                      return (
-                        <div className="markdown-codeblock">
-                          <SyntaxHighlighter
-                            language={language === 'sql' ? 'sql' : language}
-                            style={cleanTheme}
-                            customStyle={{
-                              margin: 0,
-                              borderRadius: '12px',
-                            background: '#050a18',
-                            padding: '12px',
-                          }}
-                          wrapLongLines={false}
-                        >
-                          {content}
-                        </SyntaxHighlighter>
-                        </div>
-                      )
-                    },
-                  }}
-                >
-                  {removeSourcesSection(removeSqlSection(normalizeMathDelimiters(item.answer)))}
-                </ReactMarkdown>
-              </div>
+                      },
+                    }}
+                  >
+                    {removeSourcesSection(
+                      removeSqlSection(normalizeMathDelimiters(item.response?.answer ?? '')),
+                    )}
+                  </ReactMarkdown>
+                </div>
+              )}
             </article>
             </div>
           ))

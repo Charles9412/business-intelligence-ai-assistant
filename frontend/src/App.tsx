@@ -5,19 +5,35 @@ import { TracePanel } from './components/TracePanel'
 import type { ChatResponse } from './types'
 import './styles.css'
 
+type ChatTurn = {
+  id: string
+  question: string
+  pending: boolean
+  response: ChatResponse | null
+}
+
 function App() {
   const [question, setQuestion] = useState('')
-  const [history, setHistory] = useState<ChatResponse[]>([])
+  const [history, setHistory] = useState<ChatTurn[]>([])
   const [loading, setLoading] = useState(false)
 
   const submitQuestion = async (forcedQuestion?: string) => {
     const cleanQuestion = (forcedQuestion ?? question).trim()
     if (!cleanQuestion || loading) return
 
+    const turnId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    setHistory((prev) => [
+      ...prev,
+      { id: turnId, question: cleanQuestion, pending: true, response: null },
+    ])
     setLoading(true)
     try {
       const response = await postChat({ question: cleanQuestion })
-      setHistory((prev) => [...prev, response])
+      setHistory((prev) =>
+        prev.map((turn) =>
+          turn.id === turnId ? { ...turn, pending: false, response } : turn,
+        ),
+      )
       if (!forcedQuestion) {
         setQuestion('')
       }
@@ -33,13 +49,20 @@ function App() {
         retrieved_context: [],
         error: error instanceof Error ? error.message : 'Unknown frontend error.',
       }
-      setHistory((prev) => [...prev, errorResponse])
+      setHistory((prev) =>
+        prev.map((turn) =>
+          turn.id === turnId ? { ...turn, pending: false, response: errorResponse } : turn,
+        ),
+      )
     } finally {
       setLoading(false)
     }
   }
 
-  const latestAnswer = history.length ? history[history.length - 1] : null
+  const latestAnswer =
+    [...history]
+      .reverse()
+      .find((turn) => !turn.pending && turn.response)?.response ?? null
 
   return (
     <div className="app-shell">
