@@ -18,6 +18,8 @@ The assistant answers three kinds of questions:
 
 The Gradio UI shows the final answer, selected route, route reason, document sources, generated SQL, and retrieved document context.
 
+The React UI provides a polished dashboard experience with the same transparency: route metadata, generated SQL, sources, and retrieved context.
+
 ## Demo
 
 Run the local demo:
@@ -231,6 +233,62 @@ Open:
 ```text
 http://127.0.0.1:7860
 ```
+
+Gradio remains the lightweight local demo and fallback interface.
+
+## React UI
+
+The React UI is the polished portfolio interface and uses a FastAPI backend bridge to the same `AssistantRouter`.
+
+### Backend (FastAPI)
+
+Run the API server from the project root:
+
+```powershell
+python -m backend.api
+```
+
+or:
+
+```powershell
+uvicorn backend.api:app --reload --port 8000
+```
+
+Health check endpoint:
+
+```text
+GET http://127.0.0.1:8000/health
+```
+
+Chat endpoint:
+
+```text
+POST http://127.0.0.1:8000/chat
+```
+
+### Frontend (React + Vite)
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Then open:
+
+```text
+http://127.0.0.1:5173
+```
+
+Set frontend API URL with:
+
+```text
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+Use `frontend/.env.example` as a template and do not commit `frontend/.env`.
+
+Make sure LM Studio (or another OpenAI-compatible local LLM server) is running before asking questions from either UI.
 
 ## Run Tests
 
